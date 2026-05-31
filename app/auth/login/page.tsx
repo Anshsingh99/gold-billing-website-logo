@@ -52,7 +52,7 @@ export default function Page() {
       <div className="w-full max-w-sm">
         <div className="flex flex-col gap-6">
           <div className="text-center mb-4">
-            <h1 className="text-4xl font-bold text-amber-900 dark:text-amber-300 mb-2">Gold Billing</h1>
+            <h1 className="text-4xl font-bold text-amber-900 dark:text-amber-300 mb-2">Seth Baijnath</h1>
             <p className="text-amber-700 dark:text-amber-400">Professional Shop Management System</p>
           </div>
           <Card className="border-amber-200 dark:border-amber-800">

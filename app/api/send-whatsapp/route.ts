@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
   try {
-    const { customerPhone, customerName, billNumber, totalAmount, shopName } =
+    const { customerPhone, customerName, billNumber, totalAmount,remainingAmount, shopName } =
       await request.json()
 
     if (!customerPhone) {
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     const phoneForLink = formattedPhone.replace('+', '')
 
     // Create WhatsApp message
-    const message = `Hi ${customerName},\n\nThank you for your purchase! 🎉\n\nBill Number: ${billNumber}\nTotal Amount: ₹${totalAmount.toFixed(2)}\n\nYour bill has been generated. Please contact us for the bill details.\n\nBest regards,\n${shopName}`
+    const message = `Hi ${customerName},\n\nThank you for your purchase! 🎉\n\nBill Number: ${billNumber}\nTotal Amount: ₹${totalAmount.toFixed(2)}\nRemaining Amount: ₹${remainingAmount.toFixed(2)}\n\nYour bill has been generated. Please contact us for the bill details.\n\nBest regards,\n${shopName}`
 
     // Generate wa.me link
     const encodedMessage = encodeURIComponent(message)

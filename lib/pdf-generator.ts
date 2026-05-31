@@ -130,7 +130,7 @@ export async function generateBillPDF(bill: Bill) {
   pdf.setFontSize(10)
   pdf.setFont('helvetica', 'normal')
   pdf.setTextColor(...GOLD_LITE)
-  pdf.text('YOGENDRA KUMAR SARRAF', PW / 2, y + 17, { align: 'center' })
+  pdf.text('YOGENDRA KUMAR SHARAFA', PW / 2, y + 17, { align: 'center' })
 
   y += LOGO_H + 5
   hRule(pdf, ML, y, CW, GOLD_MID, 1.2)
@@ -181,6 +181,7 @@ export async function generateBillPDF(bill: Bill) {
   sy = colLine(shopProfile?.shop_name || 'Seth Baijnath', C1X, sy)
   sy = colLine(`Owner: ${shopProfile?.owner_name || ''}`, C1X, sy)
   sy = colLine(`Phone: ${shopProfile?.phone || ''}`, C1X, sy)
+  sy = colLine(`Address: ${shopProfile?.address || ''}`, C1X, sy)
   if (shopProfile?.gst_number) colLine(`GST: ${shopProfile.gst_number}`, C1X, sy)
 
   // Bill column
