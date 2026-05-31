@@ -154,7 +154,7 @@ export default function BillList({
     if (!confirm("Are you sure you want to delete this bill?")) return;
     try {
       const supabase = createClient();
-      const { error } = await supabase.from("bills").delete().eq("id", bilId);
+      const { error } = await supabase.from("bills").delete().eq("id", billId);
 
       if (error) throw error;
 
