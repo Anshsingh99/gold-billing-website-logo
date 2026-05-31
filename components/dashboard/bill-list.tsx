@@ -362,6 +362,15 @@ export default function BillList({
                         >
                           {whatsappSendingId === bill.id ? "..." : "WA"}
                         </Button>
+                        <Button
+                          onClick={() => handleDelete(bill.id)}
+                          size="xs"
+                          variant="outline"
+                          className="border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-xs px-2 hover:bg-red-50 dark:hover:bg-red-950"
+                          title="Delete Bill"
+                        >
+                          Del
+                        </Button>
                       </div>
                     </td>
                   </tr>
