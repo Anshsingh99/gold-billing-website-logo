@@ -125,8 +125,6 @@ export default function BillList({
       }
 
       const data = await response.json();
-
-      // Update bill status
       await supabase
         .from("bills")
         .update({ whatsapp_sent: true })
@@ -154,7 +152,6 @@ export default function BillList({
 
   const handleDelete = async (billId: string) => {
     if (!confirm("Are you sure you want to delete this bill?")) return;
-
     try {
       const supabase = createClient();
       const { error } = await supabase.from("bills").delete().eq("id", billId);
