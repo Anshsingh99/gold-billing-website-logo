@@ -43,7 +43,7 @@ async function fetchLogoBase64(): Promise<string | null> {
    * Must return a base64 data-URI string (e.g. "data:image/jpeg;base64,...") or null.
    */
   try {
-    const res = await fetch('/logo.jpeg')
+    const res = await fetch('/logo.png')
     if (!res.ok) return null
     const blob = await res.blob()
     return await new Promise<string>((resolve, reject) => {
@@ -67,8 +67,17 @@ export async function generateBillPDF(bill: Bill) {
   const { data: shopProfile } = await supabase
     .from('shop_profile').select('*').eq('user_id', user.id).single()
 
-  const { data: billItems } = await supabase
-    .from('bill_items').select('*').eq('bill_id', bill.id)
+ const { data: billItems } = await supabase
+  .from('bill_items')
+  .select(`
+    *,
+    products (
+      name,
+      gold_purity
+    )
+  `)
+  .eq('bill_id', bill.id)
+    
 
   const logoBase64 = await fetchLogoBase64()
 
@@ -92,7 +101,7 @@ export async function generateBillPDF(bill: Bill) {
   const RED:       [number,number,number] = [220,  38,  38]
   const AMBER:     [number,number,number] = [180, 100,   6]
 
-  const STATUS_COLOR: Record<string, [number,number,number]> = {
+    const STATUS_COLOR: Record<string, [number,number,number]> = {
     paid: GREEN, partial: AMBER, unpaid: RED,
   }
   const STATUS_BG: Record<string, [number,number,number]> = {
@@ -115,22 +124,24 @@ export async function generateBillPDF(bill: Bill) {
   y = 12
 
   // ── 2. Header: logo left, title centred ──────────────────────────────────
-  const LOGO_W = 36, LOGO_H = 24
+  const LOGO_W = 52, LOGO_H = 24
 
   if (logoBase64) {
     const imgFmt = logoBase64.startsWith('data:image/png') ? 'PNG' : 'JPEG'
     pdf.addImage(logoBase64, imgFmt, ML, y, LOGO_W, LOGO_H)
   }
 
-  pdf.setFontSize(22)
-  pdf.setFont('helvetica', 'bold')
+  pdf.setFontSize(24)
+  pdf.setFont('helvetica', 'bolditalic')   // ← bold + italic
   pdf.setTextColor(...GOLD_DARK)
-  pdf.text('SETH BAIJNATH', PW / 2, y + 10, { align: 'center' })
+  pdf.text('SETH BAIJNATH', PW / 2, y + 11, { align: 'center' })
 
-  pdf.setFontSize(10)
-  pdf.setFont('helvetica', 'normal')
+  pdf.setFontSize(9.5)
+  pdf.setFont('helvetica', 'italic')
   pdf.setTextColor(...GOLD_LITE)
-  pdf.text('YOGENDRA KUMAR SHARAFA', PW / 2, y + 17, { align: 'center' })
+  pdf.text('YOGENDRA KUMAR SARRAF', PW / 2, y + 18, { align: 'center' })
+
+
 
   y += LOGO_H + 5
   hRule(pdf, ML, y, CW, GOLD_MID, 1.2)
