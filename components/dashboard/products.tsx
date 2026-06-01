@@ -205,7 +205,7 @@ export default function ProductsComponent() {
                   <option value="18K">18K</option>
                   <option value="14K">14K</option>
                   <option value="10K">10K</option>
-                  <option value="10K">Normal</option>
+                  <option value="Normal">Normal</option>
                 </select>
               </div>
 
