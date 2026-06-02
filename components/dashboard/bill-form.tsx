@@ -151,7 +151,7 @@ export default function BillForm({
 
   const productOptions = products.map((p) => ({
     value: p.id,
-    label: p.name,
+    label: `${p.name || "Unknown Product"}${p.gold_purity && p.gold_purity ? ` (${p.gold_purity})` : ""}`,
   }));
 
   const updateBillItem = (index: number, field: string, value: any) => {
@@ -179,7 +179,8 @@ export default function BillForm({
     const data = currentBillData || billData;
     const totalWeight = items.reduce((sum, item) => sum + item.weight, 0);
     const subtotal = items.reduce((sum, item) => sum + item.amount, 0);
-    const makingChargeAmount = totalWeight * data.making_charge_rate;
+    const makingChargeAmount = subtotal * (data.making_charge_rate / 100);
+
     const gstAmount = (subtotal + makingChargeAmount) * (data.gst_rate / 100);
     const totalAmount = subtotal + makingChargeAmount + gstAmount;
 
@@ -546,7 +547,7 @@ export default function BillForm({
                   htmlFor="making_charge_rate"
                   className="text-xs sm:text-sm text-amber-700 dark:text-amber-400"
                 >
-                  Making Charge Rate (₹/g)
+                  Making Charge (%)
                 </Label>
                 <Input
                   id="making_charge_rate"
@@ -579,10 +580,7 @@ export default function BillForm({
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span>
-                    Making Charge ({billData.total_weight.toFixed(3)}g × ₹
-                    {billData.making_charge_rate}):
-                  </span>
+                  <span>Making Charge ({billData.making_charge_rate}%):</span>
                   <span className="font-semibold">
                     ₹{billData.making_charge_amount.toFixed(2)}
                   </span>
