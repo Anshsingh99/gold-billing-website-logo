@@ -212,7 +212,7 @@ pdf.text(
 
 pdf.setFontSize(12);
 pdf.setFont("times", "normal");
-pdf.text("JEWELLERS SINCE 1950", PW / 2 + 12, 27, { align: "center" });
+pdf.text("JEWELLERS SINCE 1986", PW / 2 + 12, 27, { align: "center" });
 
 // Decorative lines - connect them seamlessly
 pdf.setDrawColor(...GOLD);
@@ -368,7 +368,7 @@ pdf.setFont("helvetica", "normal");
 pdf.setTextColor(...BLACK);
 const words = amountToWords(bill.total_amount || 0);
 const wordLines = pdf.splitTextToSize(words, 100);
-pdf.text(wordLines, y-99, y );
+pdf.text(wordLines, 45, y );
 y += wordLines.length * 5 + 7;
 
 /// ===============================

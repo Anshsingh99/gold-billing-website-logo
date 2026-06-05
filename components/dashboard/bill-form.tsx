@@ -175,23 +175,37 @@ export default function BillForm({
     calculateTotals(updated);
   };
 
-  const calculateTotals = (items: BillItem[], currentBillData?: Bill) => {
-    const data = currentBillData || billData;
-    const totalWeight = items.reduce((sum, item) => sum + item.weight, 0);
-    const subtotal = items.reduce((sum, item) => sum + item.amount, 0);
-    const makingChargeAmount = subtotal * (data.making_charge_rate / 100);
+  const calculateTotals = (items: BillItem[]) => {
+    const totalWeight = items.reduce(
+      (sum, item) => sum + (Number(item.weight) || 0),
+      0,
+    );
 
-    const gstAmount = (subtotal + makingChargeAmount) * (data.gst_rate / 100);
+    const subtotal = items.reduce(
+      (sum, item) => sum + (Number(item.amount) || 0),
+      0,
+    );
+
+    const makingChargeAmount =
+      subtotal * ((Number(billData.making_charge_rate) || 0) / 100);
+
+    const gstAmount =
+      (subtotal + makingChargeAmount) *
+      ((Number(billData.gst_rate) || 0) / 100);
+
     const totalAmount = subtotal + makingChargeAmount + gstAmount;
 
-    console.log("[v0] Calculating totals:", {
-      totalWeight,
-      subtotal,
-      makingChargeAmount,
-      gstAmount,
-      totalAmount,
-      making_charge_rate: data.making_charge_rate,
-    });
+    const paidAmount = Number(billData.paid_amount) || 0;
+
+    const remainingAmount = Math.max(0, totalAmount - paidAmount);
+
+    let paymentStatus = "unpaid";
+
+    if (remainingAmount === 0 && paidAmount > 0) {
+      paymentStatus = "paid";
+    } else if (paidAmount > 0) {
+      paymentStatus = "partial";
+    }
 
     setBillData((prev) => ({
       ...prev,
@@ -199,6 +213,8 @@ export default function BillForm({
       making_charge_amount: makingChargeAmount,
       gst_amount: gstAmount,
       total_amount: totalAmount,
+      remaining_amount: remainingAmount,
+      payment_status: paymentStatus,
     }));
   };
 
@@ -222,8 +238,17 @@ export default function BillForm({
       if (!user) throw new Error("User not found");
 
       // Calculate remaining amount
-      const remaining =
-        (billData.total_amount || 0) - (billData.paid_amount || 0);
+      const remaining = Math.max(
+        0,
+        (billData.total_amount || 0) - (billData.paid_amount || 0),
+      );
+
+      const paymentStatus =
+        remaining === 0 && (billData.paid_amount || 0) > 0
+          ? "paid"
+          : (billData.paid_amount || 0) > 0
+            ? "partial"
+            : "unpaid";
 
       let billId = billData.id;
 
@@ -233,7 +258,8 @@ export default function BillForm({
           billData as any;
         const cleanUpdateData = {
           ...updateData,
-          remaining_amount: Math.max(0, remaining),
+          remaining_amount: remaining,
+          payment_status: paymentStatus,
         };
 
         console.log(
@@ -259,8 +285,12 @@ export default function BillForm({
         await supabase.from("bill_items").delete().eq("bill_id", billId);
 
         const itemsToInsert = billItems.map((item) => ({
-          ...item,
           bill_id: billId,
+          product_id: item.product_id,
+          quantity: item.quantity,
+          weight: item.weight,
+          rate: item.rate,
+          amount: item.amount,
         }));
 
         const { error: itemsError } = await supabase
@@ -277,7 +307,8 @@ export default function BillForm({
         const insertData = {
           ...billDataForInsert,
           user_id: user.id,
-          remaining_amount: Math.max(0, remaining),
+          remaining_amount: remaining,
+          payment_status: paymentStatus,
         };
 
         console.log("[v0] Creating new bill with data:", insertData);
